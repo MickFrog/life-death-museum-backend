@@ -1,11 +1,12 @@
 import { Application } from "express";
 import { exampleRouter } from "./example";
-import { signupRouter } from "./signup";
+import { signupRouter, loginRouter } from "./auth";
   
 export const setupRoutes = (app: Application): void => {
   // API routes
   app.use("/api/example", exampleRouter);
-  app.use("/api/signup", signupRouter);
+  app.use("/auth/signup", signupRouter);
+  app.use("/auth/login", loginRouter);
 
   // Add more routes here
   // app.use('/api/users', userRouter);
