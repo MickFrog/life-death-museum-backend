@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import { connectDatabase } from "./config/database";
 import { setupMiddleware } from "./middleware";
 import { setupRoutes } from "./controller";
+import "./config/passport"; // Initialize Passport configuration
 
 // Load environment variables
 // 프로젝트 루트의 .env 파일을 읽음
