@@ -7,7 +7,7 @@ export interface Theme {
 }
 
 export interface User extends Document {
-  _id: string;
+  _id: ObjectId;
   name?: string;
   email: string;
   password: string;
