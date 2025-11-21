@@ -25,21 +25,6 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
   })(req, res, next);
 };
 
-// Optional authentication middleware (doesn't fail if no token) ??
-// export const optionalAuth = (req: Request, res: Response, next: NextFunction) => {
-//   passport.authenticate('jwt', { session: false }, (err: any, user: any) => {
-//     if (err) {
-//       return next(err);
-//     }
-    
-//     if (user) {
-//       req.user = user;
-//     }
-    
-//     next();
-//   })(req, res, next);
-// };
-
 // Local authentication middleware for login
 export const authenticateLocal = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate('local', { session: false }, (err: any, user: any, info: any) => {
