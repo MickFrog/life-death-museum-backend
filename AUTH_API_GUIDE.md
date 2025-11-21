@@ -185,16 +185,6 @@ curl -X GET http://localhost:3000/api/protected/secret \
   -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
 ```
 
-### Test Optional Auth Route (with token)
-```bash
-curl -X GET http://localhost:3000/api/protected/public-with-user \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
-```
-
-### Test Optional Auth Route (without token)
-```bash
-curl -X GET http://localhost:3000/api/protected/public-with-user
-```
 
 ## Environment Setup
 
