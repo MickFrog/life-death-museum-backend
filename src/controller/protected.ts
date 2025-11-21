@@ -15,20 +15,4 @@ protectedRouter.get('/secret', authenticateJWT, (req: Request, res: Response) =>
     });
 });
 
-// Example of an optional auth route - works with or without token
-// protectedRouter.get('/public-with-user', optionalAuth, (req: Request, res: Response) => {
-//     if (req.user) {
-//         res.json({
-//             message: `Hello ${req.user.name}! You are logged in.`,
-//             isAuthenticated: true,
-//             userId: req.user.id
-//         });
-//     } else {
-//         res.json({
-//             message: 'Hello anonymous user! You can access this without login.',
-//             isAuthenticated: false
-//         });
-//     }
-// });
-
 export { protectedRouter };
