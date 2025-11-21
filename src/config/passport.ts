@@ -71,19 +71,5 @@ passport.use(
   )
 );
 
-// Serialize user for session
-passport.serializeUser((user: any, done) => {
-  done(null, user.id);
-});
-
-// Deserialize user from session
-passport.deserializeUser(async (id: string, done) => {
-  try {
-    const user = await User.findById(id).select('-password').exec();
-    done(null, user as any);
-  } catch (error) {
-    done(error, null);
-  }
-});
 
 export { passport, JWT_SECRET };
