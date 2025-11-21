@@ -22,10 +22,10 @@ const verifyRouter = Router();
 
 signupRouter.post("/", async (req: Request<{}, {}, SignupBody>, res: Response) => {
     try {
-        const { email, password } = req.body;
+        const { name, email, password } = req.body;
 
         if (!email || !password ) {
-            return res.status(400).json({ message: 'name, email and password are required' });
+            return res.status(400).json({ message: 'email and password are required' });
         }
 
         // basic email format check
@@ -46,6 +46,7 @@ signupRouter.post("/", async (req: Request<{}, {}, SignupBody>, res: Response) =
 
         // create user with default theme
         const user = new User({
+            name: name || '',
             email,
             password: hashedPassword,
             theme: {
@@ -88,6 +89,7 @@ loginRouter.post("/", authenticateLocal, (req: Request, res: Response) => {
         });
 
         return res.status(200).json({
+            name: user.name,
             id: user.id,
             email: user.email,
             token,
@@ -126,6 +128,7 @@ verifyRouter.get("/", authenticateJWT, (req: Request, res: Response) => {
         return res.status(200).json({
             valid: true,
             user: {
+                name: user.name,
                 id: user.id,
                 email: user.email,
             }

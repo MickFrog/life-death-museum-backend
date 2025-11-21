@@ -92,7 +92,6 @@ Authorization: Bearer jwt_token_here
 ## Authentication Features
 
 ### JWT (JSON Web Tokens)
-- Tokens expire in 24 hours
 - Include user ID, email, and name in payload
 - Use Bearer token authentication for protected routes
 
@@ -107,48 +106,6 @@ Authorization: Bearer jwt_token_here
 ### Error Handling
 - Comprehensive error messages for authentication failures
 - Proper HTTP status codes (400, 401, 409, 500)
-
-### Protected Route Examples
-
-#### 1. Protected Secret Route
-- **URL:** `GET /api/protected/secret`
-- **Description:** Example protected route that requires authentication
-- **Headers:**
-```
-Authorization: Bearer jwt_token_here
-```
-- **Response:**
-```json
-{
-  "message": "Hello Test User! This is a protected route.",
-  "userId": "user_id",
-  "email": "test@example.com",
-  "accessTime": "2024-01-01T00:00:00.000Z"
-}
-```
-
-#### 2. Optional Auth Route
-- **URL:** `GET /api/protected/public-with-user`
-- **Description:** Route that works with or without authentication
-- **Headers (Optional):**
-```
-Authorization: Bearer jwt_token_here
-```
-- **Response (Authenticated):**
-```json
-{
-  "message": "Hello Test User! You are logged in.",
-  "isAuthenticated": true,
-  "userId": "user_id"
-}
-```
-- **Response (Anonymous):**
-```json
-{
-  "message": "Hello anonymous user! You can access this without login.",
-  "isAuthenticated": false
-}
-```
 
 ## Testing with cURL
 
@@ -176,12 +133,6 @@ curl -X POST http://localhost:3000/auth/login \
 ### Access Protected Route
 ```bash
 curl -X GET http://localhost:3000/auth/profile \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
-```
-
-### Test Protected Secret Route
-```bash
-curl -X GET http://localhost:3000/api/protected/secret \
   -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
 ```
 
