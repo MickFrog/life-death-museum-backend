@@ -14,9 +14,3 @@ export const generateToken = (payload: JWTPayload): string => {
   });
 };
 
-// Generate refresh token 
-export const generateRefreshToken = (payload: JWTPayload): string => {
-  return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: '7d',
-  });
-};
