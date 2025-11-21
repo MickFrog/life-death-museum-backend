@@ -5,7 +5,13 @@ import { passport } from '../config/passport';
 export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
   passport.authenticate('jwt', { session: false }, (err: any, user: any, info: any) => {
     if (err) {
-      return res.status(500).json({ message: 'Authentication error' });
+      // Log the error details for debugging
+      console.error('JWT authentication error:', err);
+      // Return detailed error in development, generic in production
+      const message = process.env.NODE_ENV === 'development'
+        ? `Authentication error: ${err.message || err}`
+        : 'Authentication error';
+      return res.status(500).json({ message });
     }
 
     if (!user) {
