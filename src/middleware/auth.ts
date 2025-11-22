@@ -48,3 +48,28 @@ export const authenticateLocal = (req: Request, res: Response, next: NextFunctio
     next();
   })(req, res, next);
 };
+
+// Admin authentication middleware
+// Currently, it just checks if user is authenticated (no admin field check yet)
+export const authenticateAdmin = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('jwt', { session: false }, (err: any, user: any, info: any) => {
+    if (err) {
+      console.error('Admin authentication error:', err);
+      const message = process.env.NODE_ENV === 'development'
+        ? `Authentication error: ${err.message || err}`
+        : 'Authentication error';
+      return res.status(500).json({ message });
+    }
+
+    if (!user) {
+      return res.status(401).json({ 
+        message: 'Access denied. Token is invalid or expired.' 
+      });
+    }
+
+    // TODO: Add admin field check when User model has admin field
+    // For now, just check if user is authenticated
+    req.user = user;
+    next();
+  })(req, res, next);
+};
