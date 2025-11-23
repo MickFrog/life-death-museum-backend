@@ -29,7 +29,13 @@ export class MockTextGenerator implements TextGeneratorInterface {
 Temperature: ${temperature}
 프롬프트: "${prompt}"
 
-이것은 mock 응답입니다. 실제 AI 서비스로 교체하면 실제 생성된 텍스트가 반환됩니다.`;
+이것은 mock 응답입니다. 실제 AI 서비스로 교체하면 실제 생성된 텍스트가 반환됩니다.
+{
+  "name": "Generated Object",
+  "description": "Generated object description",
+  "onType": "Floor"
+}
+`;
   }
 }
 
