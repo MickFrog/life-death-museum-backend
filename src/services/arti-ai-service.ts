@@ -13,7 +13,6 @@ if (process.env.OPENAI_API_KEY) {
   console.warn('⚠️  OpenAI API key not found. Using fallback analysis mode.');
 }
 
-
 // Interface for AI analysis result
 export interface AIAnalysisResult {
   choice: number;
