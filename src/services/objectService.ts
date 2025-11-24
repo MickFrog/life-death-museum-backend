@@ -116,7 +116,7 @@ export class ObjectService {
     const imageSets = [
       {
         name: "Default",
-        color: "#000000",
+        color: "#ffffff",
         src: imageUrl,
       },
     ];
