@@ -1,13 +1,9 @@
 import { Router, Request, Response, NextFunction, response } from "express";
 import { authenticateJWT } from "../middleware/auth";
-import { on } from "events";
+import { OnboardingResponse } from "../types";
+import ArtiAIService from "../services/arti-ai-service";
 
 export const onboardingRouter = Router();
-
-interface OnboardingResponse {
-    question: string;
-    answer: string;
-}
 
 const themeQuestions: string[] = [
     "어떤 칭찬을 들으면 기분이 좋던가요?",
@@ -28,45 +24,28 @@ onboardingRouter.get("/theme", authenticateJWT, (req: Request, res: Response, ne
     }
 });
 
-onboardingRouter.post("/theme", authenticateJWT, (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const userId = req.user?.id;
-        const responses: OnboardingResponse[] = req.body;
+// GET /arti/themes - Get all available themes
+onboardingRouter.get('/themes', (req: Request, res: Response) => {
+  try {
+    const themes = [1, 2, 3, 4, 5].map(id => ({
+      id,
+      ...ArtiAIService.getThemeInfo(id)
+    }));
 
-        // 3. Validation: Check if it is actually an array
-        if (!Array.isArray(responses)) {
-            return res.status(400).json({ 
-                error: "Invalid format. Expected an array of objects." 
-            });
-        }
+    return res.status(200).json({
+      success: true,
+      data: {
+        themes,
+        count: themes.length
+      }
+    });
 
-        // if responses are less than themeQuestions length, return error
-        if (!responses || responses.length < themeQuestions.length) {
-            console.log("Received theme data:", responses);
-            return res.status(400).json({
-                status: "error",
-                message: "Incomplete responses"
-            });
-        }
-
-        if (!userId) {
-        return res.status(401).json({
-            success: false,
-            message: "User not authenticated"
-        });
-        }
-        
-        // log successful reception
-        console.log("SUCCESS: Onboarding responses received for user:", userId);
-
-        // Later adding AI analysis and recommended theme based on responses
-
-        res.status(201).json({
-            status: "success",
-            message: "Onboarding responses received"
-        });
-    } catch (error) {
-        next(error);
-    }
+  } catch (error) {
+    console.error('❌ Get Themes Error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to get themes'
+    });
+  }
 });
 

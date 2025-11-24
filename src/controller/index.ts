@@ -4,6 +4,7 @@ import { signupRouter, loginRouter, profileRouter, verifyRouter } from "./auth";
 import { objectRouter } from "./object";
 import { modifiedRouter } from "./modified";
 import { onboardingRouter } from "./onboarding";
+import { themeOnboardingRouter } from "./themeOnboarding";
 
 export const setupRoutes = (app: Application): void => {
   // API routes
@@ -17,6 +18,7 @@ export const setupRoutes = (app: Application): void => {
 
   // onboarding route
   app.use("/onboarding", onboardingRouter);
+  app.use("/onboarding/theme", themeOnboardingRouter);
 
   // Object routes
   app.use("/object", objectRouter);
