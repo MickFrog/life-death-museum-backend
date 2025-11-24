@@ -102,16 +102,6 @@ export class ModifiedService {
       );
     }
 
-    // Check imageSrc update permission
-    // imageSrc can only be updated when isUserMade is false (preset objects)
-    if (params.imageSrc !== undefined) {
-      if (modified.isUserMade) {
-        throw new Error(
-          "imageSrc can only be updated for preset objects (isUserMade: false)"
-        );
-      }
-    }
-
     // imageSets cannot be updated via updateModified
     if (params.imageSets !== undefined) {
       throw new Error(

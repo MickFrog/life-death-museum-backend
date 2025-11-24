@@ -246,7 +246,6 @@ modifiedRouter.patch(
           });
         }
         if (
-          error.message.includes("imageSrc can only be updated") ||
           error.message.includes("coordinates") ||
           error.message.includes("itemFunction") ||
           error.message.includes("imageSets")
