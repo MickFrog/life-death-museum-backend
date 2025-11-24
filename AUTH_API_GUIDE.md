@@ -66,7 +66,8 @@ Authorization: Bearer jwt_token_here
   "invitation": "invitation_string",
   "objectIds": [],
   "modifiedObjectIds": [],
-  "createdAt": "2024-01-01T00:00:00.000Z"
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "questionIndex": 2
 }
 ```
 
