@@ -27,17 +27,43 @@ export interface Theme {
   weather: "sunny" | "raining" | "cloudy" | "snowing" | "night" | "sunset";
 }
 
+export interface OnboardingResponse {
+  question: string;
+  answer: string;
+}
+
+export interface AIAnalysis {
+  choice: number;
+  reason: string;
+  theme: string;
+  analyzedAt: Date;
+  responses: OnboardingResponse[];
+}
+
 export interface JWTPayload {
   id: string;
   email: string;
   name?: string;
 }
 
+export interface UserPayload extends JWTPayload {
+  theme: Theme;
+  invitation?: string;
+  objectIds: any[];
+  modifiedObjectIds: any[];
+  onboardingResponses?: OnboardingResponse[];
+  onboardingCompleted?: boolean;
+  onboardingCompletedAt?: Date;
+  aiAnalysis?: AIAnalysis;
+  createdAt: Date;
+  questionIndex: number;
+}
+
 // Extend Express namespace
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace Express {
-    interface User extends JWTPayload {}
+    interface User extends UserPayload {}
     interface Request {
       user?: User;
       files?:
