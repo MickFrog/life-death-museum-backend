@@ -12,6 +12,7 @@ export interface CreateModifiedParams {
   };
   imageSets?: ImageSet[];
   description?: string;
+  isReversed?: boolean;
 }
 
 export interface UpdateModifiedParams {
@@ -25,6 +26,7 @@ export interface UpdateModifiedParams {
   };
   imageSrc?: string;
   imageSets?: ImageSet[];
+  isReversed?: boolean;
 }
 
 /**
@@ -46,6 +48,7 @@ export class ModifiedService {
       coordinates,
       imageSets,
       description,
+      isReversed,
     } = params;
 
     // Create new modified object
@@ -62,6 +65,7 @@ export class ModifiedService {
             src: set.src.trim(),
           }))
         : [],
+      isReversed: isReversed ?? false,
       isUserMade: true, // Modified objects are always user-made
       onType: "Floor", // Default, can be changed if needed
     });
@@ -133,6 +137,9 @@ export class ModifiedService {
     }
     if (params.imageSrc !== undefined) {
       modified.imageSrc = params.imageSrc;
+    }
+    if (params.isReversed !== undefined) {
+      modified.isReversed = params.isReversed;
     }
     // Note: imageSets cannot be updated (checked earlier in the function)
 

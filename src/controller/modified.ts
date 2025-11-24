@@ -17,6 +17,7 @@ modifiedRouter.post(
         coordinates,
         imageSets,
         description,
+        isReversed,
       } = req.body;
       const userId = req.user!.id;
 
@@ -62,6 +63,13 @@ modifiedRouter.post(
         return res.status(400).json({
           message:
             "coordinates.x and coordinates.y are required and must be numbers",
+        });
+      }
+
+      // Validate isReversed if provided
+      if (isReversed !== undefined && typeof isReversed !== "boolean") {
+        return res.status(400).json({
+          message: "isReversed must be a boolean",
         });
       }
 
@@ -120,6 +128,7 @@ modifiedRouter.post(
           coordinates,
           imageSets,
           description,
+          isReversed,
         },
         userId
       );
@@ -150,6 +159,7 @@ modifiedRouter.patch(
         coordinates,
         imageSrc,
         imageSets,
+        isReversed,
       } = req.body;
 
       // Check if request body is empty
@@ -198,6 +208,13 @@ modifiedRouter.patch(
         }
       }
 
+      // Validate isReversed if provided
+      if (isReversed !== undefined && typeof isReversed !== "boolean") {
+        return res.status(400).json({
+          message: "isReversed must be a boolean",
+        });
+      }
+
       // Update modified object using service
       const updatedModified = await ModifiedService.updateModified(
         id,
@@ -209,6 +226,7 @@ modifiedRouter.patch(
           coordinates,
           imageSrc,
           imageSets,
+          isReversed,
         },
         userId
       );

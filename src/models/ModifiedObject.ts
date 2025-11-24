@@ -10,6 +10,7 @@ export interface ImageCoords {
 // Example interface
 export interface ModifiedObject extends Document, ImageObject {
   _id: ObjectId;
+  isReversed: boolean;
   itemFunction: "Gallery" | "Link" | "Board" | null;
   additionalData?: any;
   coordinates: ImageCoords;
@@ -24,6 +25,11 @@ const ModifiedObjectSchema: Schema = new Schema(
       required: false,
       default: null,
       trim: true,
+    },
+    isReversed: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
     additionalData: { type: Schema.Types.Mixed },
     coordinates: {
