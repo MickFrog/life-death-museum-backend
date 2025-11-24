@@ -113,6 +113,7 @@ profileRouter.get("/", authenticateJWT, (req: Request, res: Response) => {
             objectIds: user.objectIds,
             modifiedObjectIds: user.modifiedObjectIds,
             createdAt: user.createdAt,
+            questionIndex: user.questionIndex,
         });
     } catch (err) {
         console.error('Profile error:', err);
