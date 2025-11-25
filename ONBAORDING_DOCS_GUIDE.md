@@ -1,4 +1,4 @@
-# Arti AI Service API Documentation
+# Onboarding API Documentation
 
 ## Overview
 The Arti AI Service analyzes user onboarding responses and recommends one of five memorial themes using OpenAI GPT-3.5-turbo or a fallback rule-based system. This is a stateless service that provides immediate analysis without storing responses.
