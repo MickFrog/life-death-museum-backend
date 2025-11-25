@@ -3,7 +3,19 @@ import multer from "multer";
 import { ImageObject } from "../models/ObjectModel";
 import { User } from "../models/UserModel";
 import { authenticateJWT, authenticateAdmin } from "../middleware/auth";
+import { validate } from "../middleware/validation";
 import { ObjectService } from "../services/objectService";
+import {
+  followupQuestionSchema,
+  createObjectSchema,
+  createBasicObjectSchema,
+  updateObjectSchema,
+  type FollowupQuestionBody,
+  type CreateObjectBody,
+  type CreateBasicObjectBody,
+  type UpdateObjectBody,
+  type UpdateObjectParams,
+} from "../validators/object.validator";
 
 export const objectRouter = Router();
 
@@ -14,20 +26,11 @@ const upload = multer({ storage: multer.memoryStorage() });
 objectRouter.post(
   "/followup",
   authenticateJWT,
+  validate(followupQuestionSchema),
   async (req: Request, res: Response, _next: NextFunction) => {
     try {
-      const { content } = req.body;
-
-      // Validate content field
-      if (
-        !content ||
-        typeof content !== "string" ||
-        content.trim().length === 0
-      ) {
-        return res.status(400).json({
-          message: "content field is required and must be a non-empty string",
-        });
-      }
+      const body: FollowupQuestionBody = req.body;
+      const { content } = body;
 
       // Generate follow-up question using service
       const result = await ObjectService.generateFollowUpQuestion(content);
@@ -46,21 +49,12 @@ objectRouter.post(
 objectRouter.post(
   "/",
   authenticateJWT,
+  validate(createObjectSchema),
   async (req: Request, res: Response, _next: NextFunction) => {
     try {
-      const { content } = req.body;
+      const body: CreateObjectBody = req.body;
+      const { content } = body;
       const userId = req.user!.id;
-
-      // Validate content field
-      if (
-        !content ||
-        typeof content !== "string" ||
-        content.trim().length === 0
-      ) {
-        return res.status(400).json({
-          message: "content field is required and must be a non-empty string",
-        });
-      }
 
       // Create object using service
       const result = await ObjectService.createUserObject(content, userId);
@@ -151,30 +145,16 @@ objectRouter.post(
   "/basic",
   authenticateAdmin,
   upload.any(),
+  validate(createBasicObjectSchema),
   async (req: Request, res: Response, _next: NextFunction) => {
     try {
-      const { name, description, onType } = req.body;
-      console.log("🚀 ~ req.body:", req.body);
+      const body: CreateBasicObjectBody = req.body;
+      const { name, description, onType } = body;
       const files = req.files;
-      console.log("🚀 ~ req.files:", req.files);
 
       if (!files || !Array.isArray(files) || files.length === 0) {
         return res.status(400).json({
           message: "files are required and must be a non-empty array",
-        });
-      }
-
-      // Validate required fields
-      if (!name || !onType) {
-        return res.status(400).json({
-          message: "name and onType are required fields",
-        });
-      }
-
-      // Validate onType enum
-      if (!["LeftWall", "RightWall", "Floor"].includes(onType)) {
-        return res.status(400).json({
-          message: "onType must be one of: LeftWall, RightWall, Floor",
         });
       }
 
@@ -187,24 +167,16 @@ objectRouter.post(
       >();
 
       // Case 1: imageSets is already parsed as an array (most common case)
+      // Zod validation이 이미 통과했으므로 구조는 검증됨
       if (Array.isArray(req.body.imageSets)) {
-        req.body.imageSets.forEach((set: unknown, index: number) => {
-          if (
-            set &&
-            typeof set === "object" &&
-            "name" in set &&
-            "color" in set &&
-            typeof (set as { name: unknown; color: unknown }).name ===
-              "string" &&
-            typeof (set as { name: unknown; color: unknown }).color === "string"
-          ) {
-            const typedSet = set as { name: string; color: string };
+        req.body.imageSets.forEach(
+          (set: { name: string; color: string }, index: number) => {
             imageSetsMap.set(index, {
-              name: typedSet.name,
-              color: typedSet.color,
+              name: set.name,
+              color: set.color,
             });
           }
-        });
+        );
       } else {
         // Case 2: Parse imageSets metadata from flat keys: imageSets[0][name], imageSets[0][color]
         Object.keys(req.body).forEach((key) => {
@@ -288,10 +260,13 @@ objectRouter.post(
 objectRouter.patch(
   "/:objectId",
   authenticateAdmin,
+  validate(updateObjectSchema),
   async (req: Request, res: Response, _next: NextFunction) => {
     try {
-      const { objectId } = req.params;
-      const { name, imageSrc, description, onType, imageSets } = req.body;
+      const params: UpdateObjectParams = req.params as UpdateObjectParams;
+      const { objectId } = params;
+      const body: UpdateObjectBody = req.body;
+      const { name, imageSrc, description, onType, imageSets } = body;
 
       // Find the object
       const object = await ImageObject.findById(objectId);
@@ -308,30 +283,6 @@ objectRouter.patch(
           message:
             "Cannot update user-made objects. Only preset objects can be updated.",
         });
-      }
-
-      // Validate onType if provided
-      if (onType && !["LeftWall", "RightWall", "Floor"].includes(onType)) {
-        return res.status(400).json({
-          message: "onType must be one of: LeftWall, RightWall, Floor",
-        });
-      }
-
-      // Validate imageSets if provided
-      if (imageSets !== undefined) {
-        if (!Array.isArray(imageSets) || imageSets.length === 0) {
-          return res.status(400).json({
-            message: "imageSets must be a non-empty array",
-          });
-        }
-
-        for (const set of imageSets) {
-          if (!set.name || !set.color || !set.src) {
-            return res.status(400).json({
-              message: "Each imageSet must have name, color, and src fields",
-            });
-          }
-        }
       }
 
       // Update fields
