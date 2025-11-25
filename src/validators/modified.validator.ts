@@ -35,7 +35,9 @@ export const createModifiedSchema = z.object({
         message: "coordinates.y is required and must be a number",
       }),
     }),
-    imageSets: z.array(imageSetSchema).optional(),
+    imageSets: z
+      .array(imageSetSchema)
+      .min(1, "imageSets must be a non-empty array"),
     description: z.string().optional(),
     isReversed: z.boolean().optional(),
   }),
