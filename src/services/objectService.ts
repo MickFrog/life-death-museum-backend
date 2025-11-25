@@ -174,7 +174,7 @@ export class ObjectService {
       })
     );
 
-    // Use first image as imageSrc
+    // Use first image as currentImageSet
     const currentImageSet = uploadedImageSets[0];
 
     // Create preset object
