@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { authenticateJWT } from '../middleware/auth';
-import { themeAnalyzer } from '../services/ai-services';
+import { themeAnalysisService, OnboardingResponse, ThemeAnalysisResult } from '../services/theme-analysis-service';
 import { User } from '../models/UserModel';
-import { OnboardingResponse, ThemeAnalysisResult } from '../types/ai-services';
+
 
 const themeOnboardingRouter = Router();
 
@@ -52,10 +52,10 @@ themeOnboardingRouter.post('/analyze', authenticateJWT, async (req: Request<{}, 
     }
 
     // Call AI service for analysis
-    const analysisResult: ThemeAnalysisResult = await themeAnalyzer.analyzeResponses(responses);
+    const analysisResult: ThemeAnalysisResult = await themeAnalysisService.analyzeResponses(responses);
 
     // Get theme information
-    const themeInfo = themeAnalyzer.getThemeInfo(analysisResult.choice);
+    const themeInfo = themeAnalysisService.getThemeInfo(analysisResult.choice);
 
     console.log('✅ AI Analysis completed:', {
       choice: analysisResult.choice,

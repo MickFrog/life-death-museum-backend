@@ -1,7 +1,6 @@
 import { Router, Request, Response, NextFunction, response } from "express";
 import { authenticateJWT } from "../middleware/auth";
-import { OnboardingResponse } from "../types/ai-services";
-import { themeAnalyzer } from "../services/ai-services";
+import { themeAnalysisService, OnboardingResponse } from "../services/theme-analysis-service";
 
 export const onboardingRouter = Router();
 
@@ -29,7 +28,7 @@ onboardingRouter.get('/themes', (req: Request, res: Response) => {
   try {
     const themes = [1, 2, 3, 4, 5].map(id => ({
       id,
-      ...themeAnalyzer.getThemeInfo(id)
+      ...themeAnalysisService.getThemeInfo(id)
     }));
 
     return res.status(200).json({
