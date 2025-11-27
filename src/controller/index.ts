@@ -4,6 +4,7 @@ import { objectRouter } from "./object";
 import { modifiedRouter } from "./modified";
 import { onboardingRouter } from "./onboarding";
 import { themeOnboardingRouter } from "./themeOnboarding";
+import { userRouter } from "./user";
 
 export const setupRoutes = (app: Application): void => {
   // Auth routes
@@ -22,7 +23,9 @@ export const setupRoutes = (app: Application): void => {
   // Modified routes
   app.use("/modified", modifiedRouter);
 
+  // User routes
+  app.use("/users", userRouter);
+
   // Add more routes here
-  // app.use('/api/users', userRouter);
   // app.use('/api/posts', postRouter);
 };
