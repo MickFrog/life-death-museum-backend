@@ -98,8 +98,8 @@ export const THEME_CONFIGS: Record<number, ThemeConfig> = {
         // TODO: Replace with actual object ID from product team
         originalObjectId: "PLACEHOLDER_OBJECT_ID_2_2",
         coordinates: {
-          x: 0.3,    // TODO: Get from product team
-          y: 0.35     // TODO: Get from product team
+          x: 0.35,    // TODO: Get from product team
+          y: 0.3     // TODO: Get from product team
         },
         isReversed: false,
         itemFunction: null,
