@@ -2,6 +2,9 @@ import { Router, Request, Response } from 'express';
 import { authenticateJWT } from '../middleware/auth';
 import { themeAnalysisService, OnboardingResponse, ThemeAnalysisResult } from '../services/theme-analysis-service';
 import { User } from '../models/UserModel';
+import { createDefaultModifiedObjects, hasValidDefaultObjectConfig } from '../services/theme-default-object.service';
+import { getThemeColors } from '../config/theme-config';
+import mongoose from 'mongoose';
 
 
 const themeOnboardingRouter = Router();
@@ -63,6 +66,47 @@ themeOnboardingRouter.post('/analyze', authenticateJWT, async (req: Request<{}, 
       reason: analysisResult.reason
     });
 
+    // Get theme colors
+    const themeColors = getThemeColors(analysisResult.choice);
+
+    // Create and add 2 default modified objects for this theme
+    let defaultObjectIds: any[] = [];
+    let defaultObjectWarning = null;
+
+    if (hasValidDefaultObjectConfig(analysisResult.choice)) {
+      const result = await createDefaultModifiedObjects(analysisResult.choice, userId);
+      
+      if (result.success && result.modifiedObjectIds && result.modifiedObjectIds.length > 0) {
+        defaultObjectIds = result.modifiedObjectIds;
+        
+        // Update user with default objects and theme colors
+        const updateData: any = {
+          $addToSet: { modifiedObjectIds: { $each: defaultObjectIds } }
+        };
+
+        // Add theme colors if available
+        if (themeColors) {
+          updateData['theme.floorColor'] = themeColors.floorColor;
+          updateData['theme.leftWallColor'] = themeColors.leftWallColor;
+          updateData['theme.rightWallColor'] = themeColors.rightWallColor;
+        }
+
+        await User.findByIdAndUpdate(
+          userId,
+          updateData,
+          { new: true }
+        );
+        
+        console.log(`✅ Added ${defaultObjectIds.length} default objects and theme colors to user ${userId}`);
+      } else {
+        console.warn(`⚠️ Failed to create default objects for theme ${analysisResult.choice}:`, result.error);
+        defaultObjectWarning = result.error;
+      }
+    } else {
+      console.log(`ℹ️ Theme ${analysisResult.choice} configuration not finalized yet - skipping default objects`);
+      defaultObjectWarning = 'Theme configuration pending. Default objects will be added when product team provides data.';
+    }
+
     return res.status(200).json({
       success: true,
       message: 'AI analysis completed successfully',
@@ -76,7 +120,16 @@ themeOnboardingRouter.post('/analyze', authenticateJWT, async (req: Request<{}, 
           id: analysisResult.choice,
           name: themeInfo.name,
           characteristics: themeInfo.characteristics,
-          description: themeInfo.description
+          description: themeInfo.description,
+          colors: themeColors || undefined
+        },
+        defaultObjects: defaultObjectIds.length > 0 ? {
+          ids: defaultObjectIds,
+          count: defaultObjectIds.length,
+          created: true
+        } : {
+          created: false,
+          reason: defaultObjectWarning
         },
         user: {
           id: userId
