@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { User } from "../models/UserModel";
+import { ModifiedObjectModel } from "../models/ModifiedObject";
 import { authenticateJWT } from "../middleware/auth";
 import { validate } from "../middleware/validation";
 import {
@@ -78,6 +79,41 @@ userRouter.put(
       const themeWeather = getThemeWeather(themeId);
       const themeName = getThemeName(themeId);
 
+      // Get current user to check for previous theme
+      const currentUser = await User.findById(userId).exec();
+      if (!currentUser) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found"
+        });
+      }
+
+      // Remove previous theme's default object IDs if theme is changing
+      let removedObjectsCount = 0;
+      if (currentUser.themeId && currentUser.themeId !== themeId) {
+        // Get the previous theme's original object IDs from config
+        const previousThemeConfig = getThemeConfig(currentUser.themeId);
+        
+        if (previousThemeConfig && previousThemeConfig.defaultModifiedObjects.length > 0) {
+          // Get the original object IDs from the previous theme config
+          const objectIdsToRemove = previousThemeConfig.defaultModifiedObjects.map(
+            obj => obj.originalObjectId
+          );
+
+          // Remove these IDs directly from user's modifiedObjectIds array
+          const result = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { modifiedObjectIds: { $in: objectIdsToRemove } } },
+            { new: true }
+          ).exec();
+
+          if (result) {
+            removedObjectsCount = objectIdsToRemove.length;
+            console.log(`🗑️  Removed ${removedObjectsCount} default object IDs from previous theme ${currentUser.themeId}`);
+          }
+        }
+      }
+
       // Create default modified objects for this theme
       let defaultObjectIds: any[] = [];
       let defaultObjectsAdded = 0;
@@ -142,6 +178,7 @@ userRouter.put(
             rightWallColor: updatedUser.theme.rightWallColor
           },
           weather: themeWeather || updatedUser.theme.weather,
+          previousThemeObjectsRemoved: removedObjectsCount,
           defaultObjectsAdded: defaultObjectsAdded
         }
       });
