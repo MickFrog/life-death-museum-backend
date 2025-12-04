@@ -6,6 +6,8 @@ import {
   updateInvitationSchema,
   type UpdateInvitationBody,
 } from "../validators/user.validator";
+import { getThemeConfig, getThemeColors, getThemeWeather, getThemeName } from "../config/theme-config";
+import { createDefaultModifiedObjects, hasValidDefaultObjectConfig } from "../services/theme-default-object.service";
 
 export const userRouter = Router();
 
@@ -41,6 +43,113 @@ userRouter.patch(
       console.error("Error updating invitation:", error);
       res.status(500).json({
         message: "Internal server error",
+      });
+    }
+  }
+);
+
+// PUT /user/theme/:themeId - Update user's theme
+userRouter.put(
+  "/theme/:themeId",
+  authenticateJWT,
+  async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      const userId = req.user!.id;
+      const themeId = parseInt(req.params.themeId, 10);
+
+      // Validate themeId
+      if (isNaN(themeId) || themeId < 1 || themeId > 5) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid theme ID. Must be between 1 and 5."
+        });
+      }
+
+      // Get theme configuration
+      const themeConfig = getThemeConfig(themeId);
+      if (!themeConfig) {
+        return res.status(404).json({
+          success: false,
+          message: "Theme not found"
+        });
+      }
+
+      const themeColors = getThemeColors(themeId);
+      const themeWeather = getThemeWeather(themeId);
+      const themeName = getThemeName(themeId);
+
+      // Create default modified objects for this theme
+      let defaultObjectIds: any[] = [];
+      let defaultObjectsAdded = 0;
+
+      if (hasValidDefaultObjectConfig(themeId)) {
+        const result = await createDefaultModifiedObjects(themeId, userId);
+        
+        if (result.success && result.modifiedObjectIds && result.modifiedObjectIds.length > 0) {
+          defaultObjectIds = result.modifiedObjectIds;
+          defaultObjectsAdded = defaultObjectIds.length;
+          
+          console.log(`✅ Created ${defaultObjectsAdded} default objects for theme ${themeId}`);
+        } else {
+          console.warn(`⚠️ Failed to create default objects for theme ${themeId}:`, result.error);
+        }
+      }
+
+      // Update user with themeId, theme colors, weather, and add default objects
+      const updateData: any = {
+        themeId: themeId
+      };
+
+      if (defaultObjectIds.length > 0) {
+        updateData.$addToSet = { modifiedObjectIds: { $each: defaultObjectIds } };
+      }
+
+      if (themeColors) {
+        updateData['theme.floorColor'] = themeColors.floorColor;
+        updateData['theme.leftWallColor'] = themeColors.leftWallColor;
+        updateData['theme.rightWallColor'] = themeColors.rightWallColor;
+      }
+
+      if (themeWeather) {
+        updateData['theme.weather'] = themeWeather;
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        updateData,
+        { new: true, runValidators: true }
+      ).exec();
+
+      if (!updatedUser) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found"
+        });
+      }
+
+      console.log(`✅ Updated theme for user ${userId} to theme ${themeId}`);
+
+      // Return response matching API documentation format
+      res.status(200).json({
+        success: true,
+        message: "Theme updated successfully.",
+        data: {
+          themeId: themeId,
+          name: themeName || themeConfig.name,
+          colors: themeColors || {
+            floorColor: updatedUser.theme.floorColor,
+            leftWallColor: updatedUser.theme.leftWallColor,
+            rightWallColor: updatedUser.theme.rightWallColor
+          },
+          weather: themeWeather || updatedUser.theme.weather,
+          defaultObjectsAdded: defaultObjectsAdded
+        }
+      });
+    } catch (error) {
+      console.error("Error updating theme:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error"
       });
     }
   }
