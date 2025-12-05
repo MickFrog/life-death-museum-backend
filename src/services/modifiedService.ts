@@ -1,11 +1,12 @@
 import { ModifiedObject, ModifiedObjectModel } from "../models/ModifiedObject";
 import { ImageObject, ImageSet, OnType } from "../models/ObjectModel";
 import { User } from "../models/UserModel";
+import { ItemFunction } from "../types";
 
 export interface CreateModifiedParams {
   name: string;
   currentImageSetId: string;
-  itemFunction: "Gallery" | "Link" | "Board" | null;
+  itemFunction: ItemFunction | null;
   coordinates: {
     x: number;
     y: number;

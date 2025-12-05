@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { z } from "zod";
 import { OnType } from "../models/ObjectModel";
+import { ItemFunction } from "../types";
 
 // POST /modified 스키마
 export const createModifiedSchema = z.object({
@@ -17,7 +18,7 @@ export const createModifiedSchema = z.object({
           message: "currentImageSetId is not a valid ObjectId",
         }
       ),
-    itemFunction: z.union([z.enum(["Gallery", "Link", "Board"]), z.null()]),
+    itemFunction: z.union([z.nativeEnum(ItemFunction), z.null()]),
     coordinates: z.object({
       x: z.number({
         message: "coordinates.x is required and must be a number",
@@ -52,7 +53,7 @@ export const updateModifiedSchema = z.object({
     .object({
       name: z.string().min(1).trim().optional(),
       description: z.string().optional(),
-      itemFunction: z.enum(["Gallery", "Link", "Board"]).nullable().optional(),
+      itemFunction: z.nativeEnum(ItemFunction).nullable().optional(),
       onType: z.enum(OnType).optional(),
       additionalData: z.any().optional(),
       coordinates: z

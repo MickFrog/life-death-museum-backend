@@ -20,6 +20,12 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
   };
 }
 
+// ItemFunction enum
+export enum ItemFunction {
+  Link = "Link",
+  Board = "Board",
+}
+
 // Auth related types
 export interface Theme {
   floorColor: string;

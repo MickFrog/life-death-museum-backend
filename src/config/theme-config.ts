@@ -10,6 +10,8 @@
  * - modifications: Any custom properties (size, color, etc.)
  */
 
+import { ItemFunction } from "../types";
+
 export interface DefaultModifiedObjectConfig {
   originalObjectId: string;  // ID of the original object to copy
   coordinates: {
@@ -17,7 +19,7 @@ export interface DefaultModifiedObjectConfig {
     y: number;
   };
   isReversed: boolean;
-  itemFunction: "Gallery" | "Link" | "Board" | null;
+  itemFunction: ItemFunction | null;
   additionalData?: any;
 }
 
