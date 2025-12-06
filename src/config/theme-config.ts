@@ -27,12 +27,18 @@ export interface ThemeColors {
   rightWallColor: string;
 }
 
+export interface BackgroundMusic {
+  url: string;
+  name: string;
+}
+
 export interface ThemeConfig {
   id: number;
   name: string;
   characteristics: string[];
   description: string;
   colors: ThemeColors;
+  backgroundMusic: BackgroundMusic;
   weather: ThemeWeather;
   defaultModifiedObjects: DefaultModifiedObjectConfig[];  // Changed to array of 2 objects
 }
@@ -52,6 +58,10 @@ export const THEME_CONFIGS: Record<number, ThemeConfig> = {
       floorColor: "#FFF2E5",
       leftWallColor: "#FFE5EC",
       rightWallColor: "#DFF3FF"
+    },
+    backgroundMusic: {
+      url: "https://life-death-museum-bucket.s3.ap-northeast-2.amazonaws.com/music/park-%E1%84%83%E1%85%A9%E1%86%BC%E1%84%89%E1%85%B5%E1%86%B7.mp3",
+      name: "동심"
     },
     weather: "sunny",
     defaultModifiedObjects: [
@@ -97,6 +107,10 @@ export const THEME_CONFIGS: Record<number, ThemeConfig> = {
       leftWallColor: "#FF952F",
       rightWallColor: "#9655FB"
     },
+    backgroundMusic: {
+      url: "https://life-death-museum-bucket.s3.ap-northeast-2.amazonaws.com/music/central-park-jazz_%E1%84%82%E1%85%A1%E1%86%BC%E1%84%86%E1%85%A1%E1%86%AB.wav",
+      name: "낭만"
+    },
     weather: "sunset",
     defaultModifiedObjects: [
       {
@@ -140,6 +154,10 @@ export const THEME_CONFIGS: Record<number, ThemeConfig> = {
       floorColor: "#B0ACAA",
       leftWallColor: "#DDDDDD",
       rightWallColor: "#2E2F2E"
+    },
+    backgroundMusic: {
+      url: "https://life-death-museum-bucket.s3.ap-northeast-2.amazonaws.com/music/city-night-%E1%84%83%E1%85%A9%E1%84%89%E1%85%B5.wav",
+      name: "도시"
     },
     weather: "night",
     defaultModifiedObjects: [
@@ -185,6 +203,10 @@ export const THEME_CONFIGS: Record<number, ThemeConfig> = {
       leftWallColor: "#DDE88C",
       rightWallColor: "#C9B59B"
     },
+    backgroundMusic: {
+      url: "https://life-death-museum-bucket.s3.ap-northeast-2.amazonaws.com/music/sunny-day_%E1%84%8C%E1%85%A1%E1%84%8B%E1%85%A7%E1%86%AB.wav",
+      name: "자연"
+    },
     weather: "cloudy",
     defaultModifiedObjects: [
       {
@@ -228,6 +250,10 @@ export const THEME_CONFIGS: Record<number, ThemeConfig> = {
       floorColor: "#8F5902",
       leftWallColor: "#8A9F71",
       rightWallColor: "#FFBB00"
+    },
+    backgroundMusic: {
+      url: "https://life-death-museum-bucket.s3.ap-northeast-2.amazonaws.com/music/crachin-drizzle_%E1%84%80%E1%85%B5%E1%84%8B%E1%85%A5%E1%86%A8.m4a",
+      name: "기억"
     },
     weather: "raining",
     defaultModifiedObjects: [
@@ -302,4 +328,12 @@ export function getThemeWeather(themeId: number): ThemeWeather | null {
 export function getThemeName(themeId: number): string | null {
   const config = THEME_CONFIGS[themeId];
   return config ? config.name : null;
+}
+
+/**
+ * Get theme background music by ID
+ */
+export function getThemeBackgroundMusic(themeId: number): BackgroundMusic | null {
+  const config = THEME_CONFIGS[themeId];
+  return config ? config.backgroundMusic : null;
 }
