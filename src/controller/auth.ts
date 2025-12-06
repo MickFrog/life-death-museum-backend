@@ -53,7 +53,11 @@ signupRouter.post("/", async (req: Request<{}, {}, SignupBody>, res: Response) =
                 floorColor: '#ffffff',
                 leftWallColor: '#ffffff',
                 rightWallColor: '#000000',
-                weather: 'sunny'
+                weather: 'sunny',
+                backgroundMusic: {
+                    url: 'default-music-url',
+                    name: 'Default Music',
+                },
             }
         });
 
