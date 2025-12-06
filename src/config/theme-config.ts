@@ -5,10 +5,10 @@
  * when a user is assigned that theme.
  * 
  * TODO: Get actual values from product/planning team for:
- * - originalObjectId: Which original object to copy
- * - coordinates: Where to place it (x, y)
- * - modifications: Any custom properties (size, color, etc.)
+ * - To get actual weather types 
  */
+
+import { ThemeWeather } from "../types";
 
 export interface DefaultModifiedObjectConfig {
   originalObjectId: string;  // ID of the original object to copy
@@ -33,6 +33,7 @@ export interface ThemeConfig {
   characteristics: string[];
   description: string;
   colors: ThemeColors;
+  weather: ThemeWeather;
   defaultModifiedObjects: DefaultModifiedObjectConfig[];  // Changed to array of 2 objects
 }
 
@@ -52,6 +53,7 @@ export const THEME_CONFIGS: Record<number, ThemeConfig> = {
       leftWallColor: "#FFE5EC",
       rightWallColor: "#DFF3FF"
     },
+    weather: "sunny",
     defaultModifiedObjects: [
       {
         // TODO: Replace with actual object ID from product team
@@ -95,6 +97,7 @@ export const THEME_CONFIGS: Record<number, ThemeConfig> = {
       leftWallColor: "#FF952F",
       rightWallColor: "#9655FB"
     },
+    weather: "sunset",
     defaultModifiedObjects: [
       {
         // TODO: Replace with actual object ID from product team
@@ -138,6 +141,7 @@ export const THEME_CONFIGS: Record<number, ThemeConfig> = {
       leftWallColor: "#DDDDDD",
       rightWallColor: "#2E2F2E"
     },
+    weather: "night",
     defaultModifiedObjects: [
       {
         // TODO: Replace with actual object ID from product team
@@ -181,6 +185,7 @@ export const THEME_CONFIGS: Record<number, ThemeConfig> = {
       leftWallColor: "#DDE88C",
       rightWallColor: "#C9B59B"
     },
+    weather: "cloudy",
     defaultModifiedObjects: [
       {
         // TODO: Replace with actual object ID from product team
@@ -224,6 +229,7 @@ export const THEME_CONFIGS: Record<number, ThemeConfig> = {
       leftWallColor: "#8A9F71",
       rightWallColor: "#FFBB00"
     },
+    weather: "raining",
     defaultModifiedObjects: [
       {
         // TODO: Replace with actual object ID from product team
@@ -280,4 +286,20 @@ export function getDefaultModifiedObjectConfigs(themeId: number): DefaultModifie
 export function getThemeColors(themeId: number): ThemeColors | null {
   const config = THEME_CONFIGS[themeId];
   return config ? config.colors : null;
+}
+
+/**
+ * Get theme weather by ID
+ */
+export function getThemeWeather(themeId: number): ThemeWeather | null {
+  const config = THEME_CONFIGS[themeId];
+  return config ? config.weather : null;
+}
+
+/**
+ * Get theme name by ID
+ */
+export function getThemeName(themeId: number): string | null {
+  const config = THEME_CONFIGS[themeId];
+  return config ? config.name : null;
 }
