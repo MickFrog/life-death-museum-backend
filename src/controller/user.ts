@@ -88,31 +88,8 @@ userRouter.put(
         });
       }
 
-      // Remove previous theme's default object IDs if theme is changing
-      let removedObjectsCount = 0;
-      if (currentUser.themeId && currentUser.themeId !== themeId) {
-        // Get the previous theme's original object IDs from config
-        const previousThemeConfig = getThemeConfig(currentUser.themeId);
-        
-        if (previousThemeConfig && previousThemeConfig.defaultModifiedObjects.length > 0) {
-          // Get the original object IDs from the previous theme config
-          const objectIdsToRemove = previousThemeConfig.defaultModifiedObjects.map(
-            obj => obj.originalObjectId
-          );
-
-          // Remove these IDs directly from user's modifiedObjectIds array
-          const result = await User.findByIdAndUpdate(
-            userId,
-            { $pull: { modifiedObjectIds: { $in: objectIdsToRemove } } },
-            { new: true }
-          ).exec();
-
-          if (result) {
-            removedObjectsCount = objectIdsToRemove.length;
-            console.log(`🗑️  Removed ${removedObjectsCount} default object IDs from previous theme ${currentUser.themeId}`);
-          }
-        }
-      }
+      // Get previous theme's object count for response
+      const previousObjectsCount = currentUser.modifiedObjectIds?.length || 0;
 
       // Create default modified objects for this theme
       let defaultObjectIds: any[] = [];
@@ -131,23 +108,20 @@ userRouter.put(
         }
       }
 
-      // Update user with themeId, theme colors, weather, and add default objects
+      // Update user with themeId, theme colors, weather, backgroundMusic, and reset modifiedObjectIds
       const updateData: any = {
-        themeId: themeId
+        themeId: themeId,
+        modifiedObjectIds: defaultObjectIds // Reset array and set to new default objects
       };
 
-      if (defaultObjectIds.length > 0) {
-        updateData.$addToSet = { modifiedObjectIds: { $each: defaultObjectIds } };
-      }
-
       if (themeColors) {
-        updateData['theme.floorColor'] = themeColors.floorColor;
-        updateData['theme.leftWallColor'] = themeColors.leftWallColor;
-        updateData['theme.rightWallColor'] = themeColors.rightWallColor;
+        updateData["theme.floorColor"] = themeColors.floorColor;
+        updateData["theme.leftWallColor"] = themeColors.leftWallColor;
+        updateData["theme.rightWallColor"] = themeColors.rightWallColor;
       }
 
       if (themeWeather) {
-        updateData['theme.weather'] = themeWeather;
+        updateData["theme.weather"] = themeWeather;
       }
 
       const updatedUser = await User.findByIdAndUpdate(
@@ -178,7 +152,7 @@ userRouter.put(
             rightWallColor: updatedUser.theme.rightWallColor
           },
           weather: themeWeather || updatedUser.theme.weather,
-          previousThemeObjectsRemoved: removedObjectsCount,
+          previousThemeObjectsRemoved: previousObjectsCount,
           defaultObjectsAdded: defaultObjectsAdded
         }
       });
