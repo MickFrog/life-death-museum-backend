@@ -9,6 +9,7 @@
  */
 
 import { ThemeWeather } from "../types";
+import { ItemFunction } from "../types";
 
 export interface DefaultModifiedObjectConfig {
   originalObjectId: string;  // ID of the original object to copy
@@ -17,7 +18,7 @@ export interface DefaultModifiedObjectConfig {
     y: number;
   };
   isReversed: boolean;
-  itemFunction: "Gallery" | "Link" | "Board" | null;
+  itemFunction: ItemFunction | null;
   additionalData?: any;
 }
 

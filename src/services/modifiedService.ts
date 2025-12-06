@@ -1,11 +1,12 @@
 import { ModifiedObject, ModifiedObjectModel } from "../models/ModifiedObject";
 import { ImageObject, ImageSet, OnType } from "../models/ObjectModel";
 import { User } from "../models/UserModel";
+import { ItemFunction } from "../types";
 
 export interface CreateModifiedParams {
   name: string;
   currentImageSetId: string;
-  itemFunction: "Gallery" | "Link" | "Board" | null;
+  itemFunction: ItemFunction | null;
   coordinates: {
     x: number;
     y: number;
@@ -134,6 +135,93 @@ export class ModifiedService {
       throw new Error(
         "imageSets cannot be updated. Please create a new modified object instead."
       );
+    }
+
+    // Validate additionalData based on itemFunction
+    const targetItemFunction = params.itemFunction ?? modified.itemFunction;
+
+    // If itemFunction is being set to Link or Board, additionalData is required
+    if (params.itemFunction === ItemFunction.Link || params.itemFunction === ItemFunction.Board) {
+      if (params.additionalData === undefined || params.additionalData === null) {
+        throw new Error(
+          `additionalData is required when itemFunction is ${params.itemFunction}`
+        );
+      }
+    }
+
+    if (params.additionalData !== undefined) {
+      if (targetItemFunction === ItemFunction.Link) {
+        // Validate Link format
+        if (
+          typeof params.additionalData !== "object" ||
+          params.additionalData === null ||
+          !("link" in params.additionalData) ||
+          typeof params.additionalData.link !== "string" ||
+          params.additionalData.link.trim().length === 0
+        ) {
+          throw new Error(
+            "Invalid additionalData for Link: must have 'link' field as non-empty string"
+          );
+        }
+      } else if (targetItemFunction === ItemFunction.Board) {
+        // Validate Board format
+        if (
+          typeof params.additionalData !== "object" ||
+          params.additionalData === null ||
+          !("data" in params.additionalData)
+        ) {
+          throw new Error(
+            "Invalid additionalData for Board: must have 'data' field"
+          );
+        }
+
+        const boardData = params.additionalData.data;
+        if (
+          typeof boardData !== "object" ||
+          boardData === null ||
+          !("title" in boardData) ||
+          !("description" in boardData) ||
+          !("items" in boardData) ||
+          !Array.isArray(boardData.items)
+        ) {
+          throw new Error(
+            "Invalid additionalData for Board: 'data' must have 'title', 'description', and 'items' fields"
+          );
+        }
+
+        // Validate each item in items array
+        for (let i = 0; i < boardData.items.length; i++) {
+          const item = boardData.items[i];
+          if (
+            typeof item !== "object" ||
+            item === null ||
+            !("writer" in item) ||
+            !("text" in item) ||
+            !("color" in item) ||
+            typeof item.writer !== "string" ||
+            item.writer.trim().length === 0 ||
+            typeof item.text !== "string" ||
+            item.text.trim().length === 0 ||
+            typeof item.color !== "string" ||
+            item.color.trim().length === 0
+          ) {
+            throw new Error(
+              `Invalid additionalData for Board: items[${i}] must have 'writer', 'text', and 'color' as non-empty strings`
+            );
+          }
+        }
+      } else if (targetItemFunction === null) {
+        // null: additionalData should be empty object or undefined
+        if (
+          typeof params.additionalData === "object" &&
+          params.additionalData !== null &&
+          Object.keys(params.additionalData).length > 0
+        ) {
+          throw new Error(
+            "additionalData should be empty or undefined when itemFunction is null"
+          );
+        }
+      }
     }
 
     // Update fields

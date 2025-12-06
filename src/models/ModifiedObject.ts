@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import { ImageObject, ImageObjectSchema } from "./ObjectModel";
 import { ObjectId } from "mongoose";
+import { ItemFunction } from "../types";
 
 export interface ImageCoords {
   x: number;
@@ -11,7 +12,7 @@ export interface ImageCoords {
 export interface ModifiedObject extends Document, ImageObject {
   _id: ObjectId;
   isReversed: boolean;
-  itemFunction: "Gallery" | "Link" | "Board" | null;
+  itemFunction: ItemFunction | null;
   additionalData?: any;
   coordinates: ImageCoords;
 }
@@ -21,7 +22,7 @@ const ModifiedObjectSchema: Schema = new Schema(
   Object.assign({}, ImageObjectSchema.obj, {
     itemFunction: {
       type: String,
-      enum: ["Gallery", "Link", "Board", null],
+      enum: [ItemFunction.Link, ItemFunction.Board, null],
       required: false,
       default: null,
       trim: true,
