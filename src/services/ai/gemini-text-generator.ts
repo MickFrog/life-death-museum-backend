@@ -30,7 +30,10 @@ export class GeminiTextGenerator implements TextGeneratorInterface {
     }
   ): Promise<string> {
     try {
-      const model = options?.model || "gemini-2.5-pro";
+      const model =
+        options?.model ||
+        process.env.GOOGLE_GENAI_TEXT_MODEL_DEFAULT ||
+        "gemini-2.5-pro";
       const temperature = options?.temperature ?? 0.7;
       const systemPrompt = options?.system_prompt;
       const responseFormat = options?.response_format;

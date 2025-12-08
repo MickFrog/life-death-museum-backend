@@ -31,7 +31,10 @@ export class GoogleImagenImageGenerator implements ImageGeneratorInterface {
       [key: string]: unknown;
     }
   ): Promise<ImageGenerationResult> {
-    const model = options?.model || "imagen-4.0-generate-001";
+    const model =
+      options?.model ||
+      process.env.GOOGLE_GENAI_IMAGE_MODEL_DEFAULT ||
+      "imagen-4.0-generate-001";
     const n = options?.n ?? 1;
 
     const images: ImageOutput[] = [];
