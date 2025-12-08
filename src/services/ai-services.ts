@@ -4,6 +4,7 @@ import {
 } from "../types/ai-services";
 import { GoogleImagenImageGenerator } from "./ai/google-imagen-image-generator";
 import { MockTextGenerator } from "./mock-ai-services";
+import { OpenAIImageGenerator } from "./openai-image-generator";
 import { OpenAITextGenerator } from "./openai-text-generator";
 
 /**
@@ -23,5 +24,6 @@ export const textGenerator: TextGeneratorInterface = process.env.OPENAI_API_KEY
  * Image generation service instance
  * Automatically chooses between OpenAI and Mock implementation based on API key availability
  */
-export const imageGenerator: ImageGeneratorInterface =
-  new GoogleImagenImageGenerator(process.env.GOOGLE_GENAI_API_KEY);
+export const imageGenerator: ImageGeneratorInterface = new OpenAIImageGenerator(
+  process.env.OPENAI_API_KEY || ""
+);
