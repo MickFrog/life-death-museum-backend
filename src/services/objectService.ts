@@ -7,6 +7,7 @@ import { storage } from "./storage";
 import { ImageConverter } from "../utils/imageConverter";
 import { ResponseParser } from "../utils/responseParser";
 import { randomBytes } from "crypto";
+import { removeBackgroundService } from "./removeBackgroundService";
 
 export interface CreateObjectResult {
   object: ImageObject;
@@ -104,13 +105,19 @@ export class ObjectService {
     // Convert image data (URL or base64) to Buffer
     const { buffer, mimeType } = await ImageConverter.toBuffer(imageData);
 
-    // Upload image to storage (랜덤 문자열로 고유성 보장)
+    // Remove background from image
+    const imageWithoutBg = await removeBackgroundService.removeBackground(
+      buffer,
+      mimeType
+    );
+
+    // Upload image without background to storage (랜덤 문자열로 고유성 보장)
     const randomId = randomBytes(8).toString("hex"); // 16자리 hex 문자열
     const imagePath = `objects/${userId}/${randomId}.png`;
     const imageUrl = await storage.uploadFromBuffer(
-      buffer,
+      imageWithoutBg,
       imagePath,
-      mimeType
+      "image/png" // Background removed images are always PNG
     );
 
     // Generate image sets (variations) - for now, create a single default set
