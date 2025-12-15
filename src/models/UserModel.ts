@@ -1,6 +1,11 @@
 import mongoose, { Schema, Document, Model, ObjectId } from "mongoose";
 import { Theme } from "../types";
 
+export interface CapturedImage {
+  url: string;
+  metadata?: any;
+}
+
 export interface User extends Document {
   _id: ObjectId;
   name?: string;
@@ -11,6 +16,7 @@ export interface User extends Document {
   invitation?: string;
   objectIds: ObjectId[];
   modifiedObjectIds: ObjectId[];
+  capturedImages: CapturedImage[];
   createdAt: Date;
   questionIndex: number;
 }
@@ -60,6 +66,15 @@ const UserSchema: Schema = new Schema(
     },
     modifiedObjectIds: {
       type: [Schema.Types.ObjectId],
+      default: [],
+    },
+    capturedImages: {
+      type: [
+        {
+          url: { type: String, required: true },
+          metadata: { type: Schema.Types.Mixed },
+        },
+      ],
       default: [],
     },
     questionIndex: {
