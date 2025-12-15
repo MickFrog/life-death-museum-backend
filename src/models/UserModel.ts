@@ -3,6 +3,7 @@ import { Theme } from "../types";
 
 export interface CapturedImage {
   url: string;
+  capturedAt: Date;
   metadata?: any;
 }
 
@@ -72,6 +73,7 @@ const UserSchema: Schema = new Schema(
       type: [
         {
           url: { type: String, required: true },
+          capturedAt: { type: Date, required: true },
           metadata: { type: Schema.Types.Mixed },
         },
       ],
